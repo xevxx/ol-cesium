@@ -39,6 +39,8 @@ import type Map from 'ol/Map.js';
 import type Projection from 'ol/proj/Projection.js';
 import type {Color as OLColor} from 'ol/color.js';
 import type View from 'ol/View.js';
+import MVTWMSImageryProvider from './MVTWMSImageryProvider';
+import type {MVTWMSOptions} from './MVTWMSImageryProvider';
 
 type CesiumUrlDefinition = {
     url: string,
@@ -349,7 +351,7 @@ export function sourceToImageryProvider(
     source: Source,
     viewProj: Projection,
     olLayer: BaseLayer
-): olcsCoreOLImageryProvider | MVTImageryProvider | SingleTileImageryProvider {
+): olcsCoreOLImageryProvider | MVTImageryProvider | SingleTileImageryProvider | MVTWMSImageryProvider {
   const skip = source.get('olcs_skip');
   if (skip) {
     return null;
@@ -420,8 +422,19 @@ export function sourceToImageryProvider(
     // MVT is experimental, it should be whitelisted to be synchronized
       const fromCode = projection.getCode().split(':')[1];
       // @ts-ignore TS2341
-      const urls = source.urls.map(u => u.replace(fromCode, '3857'));
-      const extent = olLayer.getExtent();
+      let isTms = true;
+      let urls;
+      if (!source.urls) {
+        isTms = false;
+      }
+      else {
+        urls = source.urls.map(u => u.replace(fromCode, '3857'));
+      }
+      // azimap config bbox, should prob set extent property
+      let extent = olLayer.getExtent();
+      if (!extent && olLayer.get('olcs_extent')) {
+        extent = olLayer.get('olcs_extent');
+      }
       const rectangle = extentToRectangle(extent, projection);
       const minimumLevel = source.get('olcs_minimumLevel');
       const attributionsFunction = source.getAttributions();
@@ -431,14 +444,32 @@ export function sourceToImageryProvider(
         const center = getExtentCenter(extent);
         credit = attributionsFunctionToCredits(attributionsFunction, 0, center, extent)[0];
       }
+      if (isTms) {
+        provider = new MVTImageryProvider({
+          credit,
+          rectangle,
+          minimumLevel,
+          styleFunction,
+          urls
+        });
+      }
+      else {
+        const options: MVTWMSOptions = {
+          rectangle: rectangle,
+          styleFunction: styleFunction,
+          minimumLevel: minimumLevel
+        };
 
-      provider = new MVTImageryProvider({
-        credit,
-        rectangle,
-        minimumLevel,
-        styleFunction,
-        urls
-      });
+
+        provider = new MVTWMSImageryProvider(olMap, source, viewProj, options);
+        // provider = new MVTImageryProvider({
+        //   credit,
+        //   rectangle,
+        //   minimumLevel,
+        //   styleFunction,
+        //   urls
+        // });
+      }
       return provider;
     }
     return null; // FIXME: it is disabled by default right now

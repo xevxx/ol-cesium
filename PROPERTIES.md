@@ -33,5 +33,9 @@ Value: number
 Allows you to set a minimum zoom level for rendering 3D tiles in the Cesium view. This property helps to control the level of detail displayed in the 3D view based on the current zoom level.
 Check mvt example for usage in context.
 
+## olcs_extent
+Value: Array({Openlayers extent})
+Allows you to set a 3857 extent on a layer for usage in MVTWMSVectortile
+
 
 
