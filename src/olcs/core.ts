@@ -462,13 +462,6 @@ export function sourceToImageryProvider(
 
 
         provider = new MVTWMSImageryProvider(olMap, source, viewProj, options);
-        // provider = new MVTImageryProvider({
-        //   credit,
-        //   rectangle,
-        //   minimumLevel,
-        //   styleFunction,
-        //   urls
-        // });
       }
       return provider;
     }
