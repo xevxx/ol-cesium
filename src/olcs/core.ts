@@ -430,7 +430,6 @@ export function sourceToImageryProvider(
       else {
         urls = source.urls.map(u => u.replace(fromCode, '3857'));
       }
-      // azimap config bbox, should prob set extent property
       let extent = olLayer.getExtent();
       if (!extent && olLayer.get('olcs_extent')) {
         extent = olLayer.get('olcs_extent');
