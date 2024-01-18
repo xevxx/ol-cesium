@@ -318,25 +318,10 @@ export default class MVTWMSImageryProvider implements ImageryProvider /* should 
     return attributionsFunctionToCredits(attributionsFunction, zoom, center, extent);
   }
 
-  // private getCacheKey_(url: string) {
-  //   const urlObj = new URL(url);
-  //   const significantParams = ['REQUEST', 'SERVICE', 'VERSION', 'FORMAT', 'STYLES', 'TRANSPARENT', 'TILED', 'WIDTH', 'HEIGHT', 'CRS', 'BBOX'];
-    
-  //   let cacheKey = urlObj.pathname; // include the path
-  //   significantParams.forEach(param => {
-  //       if (urlObj.searchParams.has(param)) {
-  //           cacheKey += `_${param}:${urlObj.searchParams.get(param)}`;
-  //       }
-  //   });
-
-  //   return cacheKey;
-  // }
 
   private getCacheKey_(z: number, x: number, y: number) {
     return `${z}_${x}_${y}`;
   }
-
-  
 
   /**
    * @implements
