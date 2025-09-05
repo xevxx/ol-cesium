@@ -1,3 +1,27 @@
+# Additions to Library
+
+This fork adds support for four OpenLayers layer types in ol-cesium:
+
+MVTWMSSynchronizer — Bridges “MVT over WMS-style” endpoints into Cesium. Requests tiles for the current view, honors server params, and renders them in 3D.
+
+HeatmapSynchronizer — OL heatmaps on the globe. Renders in screen-space to a lightweight overlay, follows the camera during interaction (pan/zoom/tilt) via an affine transform, and recomputes once on moveEnd. Respects radius, blur, gradient, opacity, and per-feature weight. Includes kernel/palette caching and DPR scaling.
+
+VectorImageSynchronizer — Adds Cesium support for ol/layer/VectorImage. Converts features to Cesium primitives, keeps visibility/style/declutter in sync, and cleans up old billboards/labels to avoid “ghost” artifacts. Zoom work is bucketed so simple pans don’t trigger rebuilds.
+
+VectorImageClusterSynchronizer — Clustered vectors on VectorImage. Wires the cluster source to the inner vector loader, sets the current resolution, forces recluster on zoom-bucket changes, and repopulates Cesium via feature events. Prevents stale clusters and avoids over-fetch on pans.
+
+## Aims for this work
+
+Tilt-safe heatmaps that visually match OL (no geodetic smearing).
+
+Correct cluster re-evaluation on zoom (with live inner-source refresh).
+
+No label smearing: robust teardown of Cesium collections on updates.
+
+Fewer unnecessary reloads: zoom-bucket gating and light throttling.
+
+Drop-in usage: OLCesium.ts registers these synchronizers; add your OL layers as usual and enable ol-cesium.
+
 # OpenLayers - Cesium library
 
 OLCS is an opensource JS library for making [OpenLayers](https://openlayers.org/) and [CesiumJS](https://cesium.com/platform/cesiumjs/) works together, in the same application.
