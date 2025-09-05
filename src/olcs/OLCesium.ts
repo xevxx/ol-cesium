@@ -7,6 +7,9 @@ import olcsCamera from './Camera.js';
 import olcsRasterSynchronizer from './RasterSynchronizer.js';
 import olcsVectorSynchronizer from './VectorSynchronizer.js';
 import olcsOverlaySynchronizer from './OverlaySynchronizer.js';
+import olcsHeatmapSynchronizer from './HeatmapSynchronizer.js';
+import olcsVectorImageSynchronizer from './VectorImageSynchronizer';
+import olcsVectorImageClusterSynchronizer from './VectorImageClusterSynchronizer.js';
 import type Map from 'ol/Map.js';
 import type Interaction from 'ol/interaction/Interaction.js';
 import type {Group} from 'ol/layer.js';
@@ -235,7 +238,10 @@ export default class OLCesium {
 
     this.synchronizers_ = options.createSynchronizers ?
       options.createSynchronizers(this.map_, this.scene_, this.dataSourceCollection_) : [
+        new olcsHeatmapSynchronizer(this.map_, this.scene_), 
         new olcsRasterSynchronizer(this.map_, this.scene_),
+        new olcsVectorImageSynchronizer(this.map_, this.scene_),
+        new olcsVectorImageClusterSynchronizer(this.map_, this.scene_),
         new olcsVectorSynchronizer(this.map_, this.scene_),
         new olcsOverlaySynchronizer(this.map_, this.scene_)
       ] as unknown as SynchronizerType[];
