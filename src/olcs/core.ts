@@ -11,6 +11,7 @@ import type ImageTile from 'ol/ImageTile.js';
 import olcsCoreOLImageryProvider from './core/OLImageryProvider.js';
 import {getSourceProjection} from './util.js';
 import MVTImageryProvider from './MVTImageryProvider.js';
+import MVTWMSImageryProvider from './MVTWMSImageryProvider.js';
 import VectorTileLayer from 'ol/layer/VectorTile.js';
 import {type Extent, getCenter as getExtentCenter} from 'ol/extent.js';
 import type BaseLayer from 'ol/layer/Base.js';
