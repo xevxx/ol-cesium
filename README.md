@@ -10,7 +10,16 @@ VectorImageSynchronizer — Adds Cesium support for ol/layer/VectorImage. Conver
 
 VectorImageClusterSynchronizer — Clustered vectors on VectorImage. Wires the cluster source to the inner vector loader, sets the current resolution, forces recluster on zoom-bucket changes, and repopulates Cesium via feature events. Prevents stale clusters and avoids over-fetch on pans.
 
-## Aims for this work
+Creation of a olcs_authHeader param to set on source which is used in olimageryprovider(as cesiium resource) and MVTImageryProvider and MVTWMSImageryProvider with fetch
+
+Use in your code
+```
+source.set('olcs_authHeaders', () => ({
+    Authorization: `Bearer ${your token}`
+}));
+```
+
+## things we tried to achive with this work
 
 Tilt-safe heatmaps that visually match OL (no geodetic smearing).
 
