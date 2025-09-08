@@ -9,7 +9,8 @@ import {createFromTemplates as createTileUrlFunctions} from 'ol/tileurlfunction.
 import type {Credit, Event, ImageryLayerFeatureInfo, ImageryProvider, ImageryTypes, Proxy, Rectangle, Request, TileDiscardPolicy, TilingScheme} from 'cesium';
 import type {UrlFunction} from 'ol/Tile.js';
 import RenderFeature from 'ol/render/Feature.js';
-import {createEmptyCanvas} from './core/OLImageryProvider.js';
+import {createEmptyCanvas} from './core/OLImageryProvider';
+import { VectorTile } from 'ol/source';
 
 
 export interface MVTOptions {
@@ -19,7 +20,8 @@ export interface MVTOptions {
   styleFunction: StyleFunction,
   cacheSize?: number,
   featureCache?: LRUCache<Promise<RenderFeature[]>>
-  minimumLevel: number
+  minimumLevel: number,
+  source: VectorTile
 }
 
 const format = new MVT({
@@ -35,6 +37,7 @@ const styles = [new Style({
 
 
 export default class MVTImageryProvider implements ImageryProvider {
+  private source_ : VectorTile;
   private urls: string[];
   private emptyCanvas_: HTMLCanvasElement = createEmptyCanvas();
   private emptyCanvasPromise_: Promise<HTMLCanvasElement> = Promise.resolve(this.emptyCanvas_);
@@ -144,6 +147,7 @@ export default class MVTImageryProvider implements ImageryProvider {
   }
 
   constructor(options: MVTOptions) {
+    this.source_ = options.source;
     this.urls = options.urls;
     this.rectangle_ = options.rectangle || this.tilingScheme.rectangle;
     this.credit = options.credit;
@@ -166,8 +170,16 @@ export default class MVTImageryProvider implements ImageryProvider {
     }
     if (!promise) {
       const url = this.getUrl_(z, x, y);
-      promise = fetch(url)
-          .then(r => (r.ok ? r : Promise.reject(r)))
+      // look up headers function on the source
+      const headersFn = this.source_?.get?.('olcs_authHeaders');
+      const headers = typeof headersFn === 'function'
+        ? headersFn({ z, x, y })  // allow context if you need it
+        : undefined;
+
+      promise = fetch(url, {
+        headers: headers ?? {}
+      })
+        .then(r => (r.ok ? r : Promise.reject(r)))
           .then(r => r.arrayBuffer())
           .then(buffer => this.readFeaturesFromBuffer(buffer));
       this.featureCache.set(cacheKey, promise);
