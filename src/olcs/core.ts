@@ -350,7 +350,7 @@ export function sourceToImageryProvider(
     source: Source,
     viewProj: Projection,
     olLayer: BaseLayer
-): olcsCoreOLImageryProvider | MVTImageryProvider | SingleTileImageryProvider {
+): olcsCoreOLImageryProvider | MVTImageryProvider | MVTWMSImageryProvider | SingleTileImageryProvider {
   const skip = source.get('olcs_skip');
   if (skip) {
     return null;
