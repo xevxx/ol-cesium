@@ -1,6 +1,6 @@
-import {getSourceProjection} from '../util.js';
+import {getSourceProjection} from '../util';
 import {type TileImage} from 'ol/source.js';
-import {attributionsFunctionToCredits} from '../core.js';
+import {attributionsFunctionToCredits} from '../core';
 import type {Map} from 'ol';
 import type {Projection} from 'ol/proj.js';
 import type {Credit, Event, ImageryLayerFeatureInfo, ImageryProvider, ImageryTypes, Proxy, Rectangle, Request, TileDiscardPolicy, TilingScheme} from 'cesium';
@@ -222,9 +222,9 @@ export default class OLImageryProvider implements ImageryProvider /* should not 
       this.projection_ = getSourceProjection(this.source_) || this.fallbackProj_;
       const options = {numberOfLevelZeroTilesX: 1, numberOfLevelZeroTilesY: 1};
 
-      if (this.source_.getTileGrid() !== null) {
+      if (this.source_.tileGrid !== null) {
         // Get the number of tiles at level 0 if it is defined
-        this.source_.getTileGrid().forEachTileCoord(this.projection_.getExtent(), 0, ([zoom, xIndex, yIndex]) => {
+        this.source_.tileGrid.forEachTileCoord(this.projection_.getExtent(), 0, ([zoom, xIndex, yIndex]) => {
           options.numberOfLevelZeroTilesX = xIndex + 1;
           options.numberOfLevelZeroTilesY = yIndex + 1;
         });
@@ -265,6 +265,7 @@ export default class OLImageryProvider implements ImageryProvider /* should not 
   /**
    * @implements
    */
+  /*
   requestImage(x: number, y: number, level: number, request?: Request): Promise<ImageryTypes> | undefined {
     const tileUrlFunction = this.source_.getTileUrlFunction();
     if (tileUrlFunction && this.projection_) {
@@ -283,4 +284,45 @@ export default class OLImageryProvider implements ImageryProvider /* should not 
       return this.emptyCanvasPromise_;
     }
   }
+    */
+   requestImage(
+      x: number,
+      y: number,
+      level: number,
+      request?: Request
+    ): Promise<ImageryTypes> | undefined {
+      const tileUrlFunction = this.source_.getTileUrlFunction();
+      if (tileUrlFunction && this.projection_) {
+        const z_ = this.shouldRequestNextLevel ? level + 1 : level;
+
+        let url = tileUrlFunction.call(this.source_, [z_, x, y], 1, this.projection_);
+        if (this.proxy) {
+          url = this.proxy.getURL(url);
+        }
+
+        if (url) {
+          // Look up optional headers supplier from the OL source
+          const headersFn = this.source_?.get?.("olcs_authHeaders");
+          const headers =
+            typeof headersFn === "function" ? headersFn({ z: z_, x, y }) : undefined;
+
+          // Build a Cesium.Resource with headers
+          const resource = new Cesium.Resource({
+            url,
+            headers, // e.g. { Authorization: `Bearer ${token}` }
+            proxy: this.proxy || undefined,
+            request, // pass through Cesium.Request object if given
+          });
+
+          // Use the resource instead of a bare URL
+          return Cesium.ImageryProvider.loadImage(this, resource) as Promise<ImageryTypes>;
+        }
+
+        return this.emptyCanvasPromise_;
+      } else {
+        // return empty canvas to stop Cesium from retrying later
+        return this.emptyCanvasPromise_;
+      }
+    }
+
 }
