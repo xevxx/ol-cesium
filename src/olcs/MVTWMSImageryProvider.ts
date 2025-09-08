@@ -388,7 +388,15 @@ export default class MVTWMSImageryProvider implements ImageryProvider /* should 
       promise = this.featureCache.get(cacheKey);
     }
     if (!promise) {
-      promise = fetch(url)
+      // look up headers function on the source
+          const headersFn = this.source_?.get?.('olcs_authHeaders');
+          const headers = typeof headersFn === 'function'
+            ? headersFn({ z, x, y })  // allow context if you need it
+            : undefined;
+
+          promise = fetch(url, {
+            headers: headers ?? {}
+          })
           .then(r => (r.ok ? r : Promise.reject(r)))
           .then(r => r.arrayBuffer())
           .then(buffer => this.readFeaturesFromBuffer(buffer));
