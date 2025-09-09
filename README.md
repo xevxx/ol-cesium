@@ -2,7 +2,7 @@
 
 This fork adds support for four OpenLayers layer types in ol-cesium:
 
-MVTWMSSynchronizer — Bridges “MVT over WMS-style” endpoints into Cesium. Requests tiles for the current view, honors server params, and renders them in 3D.
+MVTWMSSynchronizer — Bridges “MVT over WMS-style” endpoints into Cesium. Requests tiles for the current view, honors server params, and renders them in 3D. also option to revert to base WMS in cesium using olcs_wmsFormat flag
 
 HeatmapSynchronizer — OL heatmaps on the globe. Renders in screen-space to a lightweight overlay, follows the camera during interaction (pan/zoom/tilt) via an affine transform, and recomputes once on moveEnd. Respects radius, blur, gradient, opacity, and per-feature weight. Includes kernel/palette caching and DPR scaling.
 
@@ -10,7 +10,7 @@ VectorImageSynchronizer — Adds Cesium support for ol/layer/VectorImage. Conver
 
 VectorImageClusterSynchronizer — Clustered vectors on VectorImage. Wires the cluster source to the inner vector loader, sets the current resolution, forces recluster on zoom-bucket changes, and repopulates Cesium via feature events. Prevents stale clusters and avoids over-fetch on pans.
 
-Creation of a olcs_authHeader param to set on source which is used in olimageryprovider(as cesiium resource) and MVTImageryProvider and MVTWMSImageryProvider with fetch
+Creation of a olcs_authHeader param to set on source which is used in olimageryprovider(as cesium resource) and MVTImageryProvider and MVTWMSImageryProvider with fetch
 
 Use in your code
 ```
