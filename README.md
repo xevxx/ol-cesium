@@ -1,35 +1,23 @@
 # Additions to Library
 
-This fork adds support for four OpenLayers layer types in ol-cesium:
+This fork extends ol-cesium with support for four new OpenLayers layer types and authentication handling.
 
-MVTWMSSynchronizer — Bridges “MVT over WMS-style” endpoints into Cesium. Requests tiles for the current view, honors server params, and renders them in 3D. also option to revert to base WMS in cesium using ```olcs_wmsFormat``` flag
+## New Synchronizers
 
-HeatmapSynchronizer — OL heatmaps on the globe. Renders in screen-space to a lightweight overlay, follows the camera during interaction (pan/zoom/tilt) via an affine transform, and recomputes once on moveEnd. Respects radius, blur, gradient, opacity, and per-feature weight. Includes kernel/palette caching and DPR scaling.
+- **MVTWMSSynchronizer**
+Bridges “MVT over WMS-style” endpoints into Cesium. Requests tiles for the current view, applies server params, and renders them in 3D. Supports fallback to base WMS in Cesium via the ```olcs_wmsFormat``` flag.
 
-VectorImageSynchronizer — Adds Cesium support for ol/layer/VectorImage. Converts features to Cesium primitives, keeps visibility/style/declutter in sync, and cleans up old billboards/labels to avoid “ghost” artifacts. Zoom work is bucketed so simple pans don’t trigger rebuilds.
+- **HeatmapSynchronizer**
+Brings OL heatmaps onto the globe. Renders to a lightweight screen-space overlay that tracks camera transforms in real-time (pan/zoom/tilt) and recomputes on moveEnd. Respects OL heatmap options (radius, blur, gradient, opacity, per-feature weight) with kernel/palette caching and DPR scaling.
 
-VectorImageClusterSynchronizer — Clustered vectors on VectorImage. Wires the cluster source to the inner vector loader, sets the current resolution, forces recluster on zoom-bucket changes, and repopulates Cesium via feature events. Prevents stale clusters and avoids over-fetch on pans.
+- **VectorImageSynchronizer**
+Adds Cesium support for ol/layer/VectorImage. Converts features into Cesium primitives while maintaining visibility, styles, and decluttering. Cleans up old billboards/labels to prevent “ghosts.” Zoom changes are bucketed to avoid unnecessary rebuilds during pans.
 
-Creation of a olcs_authHeader param to set on source which is used in olimageryprovider(as cesium resource) and MVTImageryProvider and MVTWMSImageryProvider with fetch
+- **VectorImageClusterSynchronizer**
+Enables clustering for VectorImage layers. Connects the cluster source to its inner vector loader, applies the current resolution, reclusters on zoom-bucket changes, and repopulates Cesium via feature events. Prevents stale clusters and avoids over-fetching on pans.
 
-Use in your code
-```
-source.set('olcs_authHeaders', () => ({
-    Authorization: `Bearer ${your token}`
-}));
-```
-
-## things we tried to achive with this work
-
-Tilt-safe heatmaps that visually match OL (no geodetic smearing).
-
-Correct cluster re-evaluation on zoom (with live inner-source refresh).
-
-No label smearing: robust teardown of Cesium collections on updates.
-
-Fewer unnecessary reloads: zoom-bucket gating and light throttling.
-
-Drop-in usage: OLCesium.ts registers these synchronizers; add your OL layers as usual and enable ol-cesium.
+- **Auth Header Support**
+A new ```olcs_authHeaders``` param can be set on sources. It is used in olimageryprovider (as a Cesium Resource), MVTImageryProvider, and MVTWMSImageryProvider via fetch.
 
 # OpenLayers - Cesium library
 
