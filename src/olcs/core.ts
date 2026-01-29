@@ -442,6 +442,7 @@ export function sourceToImageryProvider(
       }
 
       provider = new MVTImageryProvider({
+        source,
         credit,
         rectangle,
         minimumLevel,

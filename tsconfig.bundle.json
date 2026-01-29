@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "ES2022",
+      "moduleResolution": "Node",
+      "lib": ["es2023", "dom"],
+  
+      /* 🔓 looseness starts here */
+      "strict": false,
+      "strictPropertyInitialization": false,
+      "noImplicitThis": false,
+      "noImplicitAny": false,
+  
+      /* bundling-only settings */
+      "declaration": false,
+      "declarationMap": false,
+      "sourceMap": false,
+      "inlineSourceMap": false,
+  
+      "skipLibCheck": true
+    },
+    "include": ["src/**/*.ts"],
+    "exclude": ["**/*.test.ts"]
+  }
+  

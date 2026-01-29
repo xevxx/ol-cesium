@@ -222,12 +222,18 @@ export default class OLImageryProvider implements ImageryProvider /* should not 
       this.projection_ = getSourceProjection(this.source_) || this.fallbackProj_;
       const options = {numberOfLevelZeroTilesX: 1, numberOfLevelZeroTilesY: 1};
 
-      if (this.source_.tileGrid !== null) {
+      const tileGrid = this.source_.getTileGrid?.();
+
+      if (tileGrid) {
         // Get the number of tiles at level 0 if it is defined
-        this.source_.tileGrid.forEachTileCoord(this.projection_.getExtent(), 0, ([zoom, xIndex, yIndex]) => {
-          options.numberOfLevelZeroTilesX = xIndex + 1;
-          options.numberOfLevelZeroTilesY = yIndex + 1;
-        });
+        tileGrid.forEachTileCoord(
+          this.projection_.getExtent(),
+          0,
+          ([zoom, xIndex, yIndex]) => {
+            options.numberOfLevelZeroTilesX = xIndex + 1;
+            options.numberOfLevelZeroTilesY = yIndex + 1;
+          }
+        );
       }
 
       if (this.projection_.getCode() === 'EPSG:4326') {

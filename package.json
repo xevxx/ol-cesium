@@ -5,7 +5,7 @@
   "scripts": {
     "test": "node --enable-source-maps --import @swc-node/register/esm-register --test  src/olcs/*.test.ts",
     "build-examples": "rm -rf dist; parcel build --dist-dir dist/examples && npm run copy-static-dist && npm run copy-rawjs-sandbox",
-    "prepare": "tsc --pretty; npm run doc",
+    "prepare": "tsc --pretty && npm run doc",
     "typecheck": "tsc --pretty --noEmit",
     "lint": "eslint src examples",
     "checks": "npm run lint && npm run typecheck",
@@ -91,6 +91,10 @@
   "devDependencies": {
     "@babel/parser": "7.27.5",
     "@mapbox/geojsonhint": "3.3.0",
+    "@parcel/transformer-typescript-types": "^2.15.2",
+    "@rollup/plugin-commonjs": "^29.0.0",
+    "@rollup/plugin-node-resolve": "^16.0.3",
+    "@rollup/plugin-typescript": "^12.3.0",
     "@swc-node/register": "1.10.10",
     "@typescript-eslint/eslint-plugin": "8.33.1",
     "@typescript-eslint/parser": "8.33.1",
@@ -102,6 +106,7 @@
     "ol": "10.5.0",
     "parcel": "2.15.2",
     "proj4": "2.17.0",
+    "rollup": "^4.57.0",
     "typedoc": "0.28.5",
     "typescript": "5.8.3"
   }
