@@ -229,11 +229,10 @@ export default class HeatmapSynchronizer extends AbstractSynchronizer<any> {
       const dLon = 0.0005;
       const dLat = 0.0005;
 
-      const toWin = (lo: number, la: number) => {
-        const w = Cesium.SceneTransforms.wgs84ToWindowCoordinates(
-          scene, Cesium.Cartesian3.fromDegrees(lo, la, 0)
-        );
-        return w ? { x: w.x, y: w.y } : null;
+      const toWin = (lo, la) => {
+          const cart = Cesium.Cartesian3.fromDegrees(lo, la, 0);
+          const w = Cesium.SceneTransforms.worldToWindowCoordinates(scene, cart);
+          return w ? { x: w.x, y: w.y } : null;
       };
 
       const pC = toWin(lon, lat);
@@ -256,11 +255,10 @@ export default class HeatmapSynchronizer extends AbstractSynchronizer<any> {
     const applyFollowTransform = () => {
       if (!this.overlayCanvas || !this.anchorLonLat || !this.anchorScreenC) return;
 
-      const toWin = (lo: number, la: number) => {
-        const w = Cesium.SceneTransforms.wgs84ToWindowCoordinates(
-          scene, Cesium.Cartesian3.fromDegrees(lo, la, 0)
-        );
-        return w ? { x: w.x, y: w.y } : null;
+      const toWin = (lo, la) => {
+          const cart = Cesium.Cartesian3.fromDegrees(lo, la, 0);
+          const w = Cesium.SceneTransforms.worldToWindowCoordinates(scene, cart);
+          return w ? { x: w.x, y: w.y } : null;
       };
 
       const c0 = this.anchorScreenC;
@@ -365,20 +363,20 @@ export default class HeatmapSynchronizer extends AbstractSynchronizer<any> {
 
         accCtx.globalAlpha = Math.min(1, Math.max(0, weight * alphaScale));
 
-        for (let k = 0; k < points.length; k++) {
-          const cXY = points[k];
-          const lonlat = olTransform(cXY, proj, 'EPSG:4326'); // [lon, lat]
-
-          const cart = Cesium.Cartesian3.fromDegrees(lonlat[0], lonlat[1], 0.0);
-          const win = Cesium.SceneTransforms.wgs84ToWindowCoordinates(scene, cart);
-          if (!win) continue;
-
-          const x = Math.round(win.x * scale);
-          const y = Math.round(win.y * scale);
-          if (x < -footprint || y < -footprint || x > w + footprint || y > h + footprint) continue;
-
-          accCtx.drawImage(kernel, x - footprint, y - footprint);
-        }
+         for (let k = 0; k < points.length; k++) {
+             const cXY = points[k];
+             const lonlat = proj_js.transform(cXY, proj, 'EPSG:4326'); // [lon, lat]
+        
+             const cart = Cesium.Cartesian3.fromDegrees(lonlat[0], lonlat[1], 0.0);
+             const win = Cesium.SceneTransforms.worldToWindowCoordinates(scene, cart);
+             if (!win) continue;
+        
+             const x = Math.round(win.x * scale);
+             const y = Math.round(win.y * scale);
+        
+             if (x < -footprint || y < -footprint || x > w + footprint || y > h + footprint) continue;
+             accCtx.drawImage(kernel, x - footprint, y - footprint);
+         }
       }
 
       // colorize
