@@ -1,6 +1,6 @@
 {
   "name": "olcs",
-  "version": "2.22.1",
+  "version": "2.22.3",
   "description": "OpenLayers Cesium integration and plugin library",
   "scripts": {
     "test": "node --enable-source-maps --import @swc-node/register/esm-register --test  src/olcs/*.test.ts",
@@ -34,10 +34,18 @@
   "type": "module",
   "main": "./lib/olcs.js",
   "exports": {
-    ".": "./lib/olcs.js",
-    "./src/*": "./lib/olcs/*.js",
-    "./ts/*": "./lib/olcs/*.ts",
-    "./*": "./lib/olcs/*.js"
+    ".": {
+      "types": "./lib/types/olcs.d.ts",
+      "default": "./lib/olcs.js"
+    },
+    "./src/*": {
+      "types": "./lib/types/*.d.ts",
+      "default": "./lib/olcs/*.js"
+    },
+    "./*": {
+      "types": "./lib/types/*.d.ts",
+      "default": "./lib/olcs/*.js"
+    }
   },
   "parcelIgnore": [
     "dist/examples/rawjs/*"
