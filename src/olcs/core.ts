@@ -404,6 +404,41 @@ export function extentToRectangle(extent: Extent, projection: ProjectionLike) {
   return null;
 }
 
+function isValidCesiumRectangle(rectangle: Rectangle | null | undefined) {
+  return (
+    !!rectangle &&
+    Number.isFinite(rectangle.west) &&
+    Number.isFinite(rectangle.south) &&
+    Number.isFinite(rectangle.east) &&
+    Number.isFinite(rectangle.north)
+  );
+}
+
+function getSafeImageryRectangle(
+  provider: {
+    rectangle?: Rectangle | null;
+    tilingScheme?: {rectangle?: Rectangle | null} | null;
+  },
+  extent: Extent | undefined,
+  projection: ProjectionLike,
+): Rectangle | null {
+  let rectangle = extent ? extentToRectangle(extent, projection) : null;
+
+  if (!isValidCesiumRectangle(rectangle)) {
+    rectangle = provider.rectangle;
+  }
+
+  if (!isValidCesiumRectangle(rectangle)) {
+    rectangle = provider.tilingScheme?.rectangle;
+  }
+
+  if (!isValidCesiumRectangle(rectangle)) {
+    rectangle = Cesium.Rectangle.MAX_VALUE;
+  }
+
+  return isValidCesiumRectangle(rectangle) ? rectangle : null;
+}
+
 export function sourceToImageryProvider(
   olMap: Map,
   source: Source,
@@ -594,15 +629,14 @@ export function tileLayerToImageryLayer(
     return null;
   }
 
-  const layerOptions: {rectangle?: Rectangle} = {};
-
   const forcedExtent = olLayer.get('olcs_extent');
   const ext = forcedExtent || olLayer.getExtent();
-  if (ext) {
-    layerOptions.rectangle = extentToRectangle(ext, viewProj);
+  const rectangle = getSafeImageryRectangle(provider, ext, viewProj);
+  if (!rectangle) {
+    return null;
   }
 
-  const cesiumLayer = new Cesium.ImageryLayer(provider, layerOptions);
+  const cesiumLayer = new Cesium.ImageryLayer(provider, {rectangle});
   return cesiumLayer;
 }
 
