@@ -1,5 +1,21 @@
 # Changelog
 
+## v 2.23.0
+
+* Changes
+  * Replace Jekyll-based gh-pages with GitHub Actions deploy workflow.
+  * Replace Parcel with Vite for examples.
+  * Fix canvas pattern fill rendering in Cesium (was falling back to black).
+  * Fix invalid `</link>` closing tags in example HTML files.
+  * Update KML example data source URL.
+  * Fix types exports map.
+
+## v 2.22.4
+
+* Changes
+  * Fix exports to correctly resolve css.
+  * Stop using deprecated Cesium defaultValue function.
+
 ## v 2.22.3
 
 * Changes

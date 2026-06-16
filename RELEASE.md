@@ -10,10 +10,11 @@ Each month, a new release is published in accordance to https://github.com/openl
 - Compile from scratch and run all tests:
   - npm run lint
   - npm run typecheck
-  - npm start; open http://localhost:3000/examples # test all examples (dev mode)
-  - npm run build-examples; python3 -m http.server --directory dist 12345; open http://localhost:12345/examples # test all examples (built mode)
+  - npm start; open http://localhost:5173/examples # test all examples (dev mode)
+  - npm run build-examples; npx serve dist; open http://localhost:3000/examples # test all examples (built mode)
 - Publish with:
   - npm version minor # or patch
   - npm pack
   - npm publish # this will publish package olcs (ol-cesium package is obsolete and not updated anymore)
-  - git push --tags
+  - git push --tags # this will trigger the deploy workflow to publish the website and create a draft GitHub release
+  - Review and publish the draft release at https://github.com/openlayers/ol-cesium/releases
